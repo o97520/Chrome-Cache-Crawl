@@ -1,5 +1,4 @@
 # ChromeCacheCrawl
-17 liner cmdline tool to crawl locally stored chrome cache and store them in a specified directory.
 
 default : all images
 default : only files larger than 20KB
