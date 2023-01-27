@@ -1,29 +1,16 @@
-import { readdirSync } from "fs";
-
-export var pc = 'C:/Users/M/AppData/Local/Google/Chrome/User Data/Default/Cache/Cache_Data/'
-export var pa = 'C:/Users/M/Pictures/A/' //whatever path
-
-export var sze = process.argv[2] ? process.argv[2] * 1024 * 1024 : 20 * 1024;
-export var n = readdirSync(pc)
-
 import { fileTypeFromFile } from "file-type";
-import { statSync, renameSync } from "fs";
-import { n, pc, a, sze, pa } from "./n";
-
-var a = await newFunction();
-async function newFunction() {
-    for (var a of n) {
-        try { var szec = statSync(pc + a).size; } catch (error) { }
-        if (szec > sze) {
-            var c = await fileTypeFromFile(pc + a).then((c) => {
-                return c;
-            }).catch(err => console.log(err));
-            if (c && c.mime.split('/')[0] == 'image') {
-                try { renameSync(pc + a, pa + String(Math.floor(Math.random() * 1e8)) + '.' + c.ext); } catch (error) { }
-                console.log('\n' + c.ext + ' == ' + (szec / (1024 * 1024)).toPrecision(4) + ' MB');
-            }
-        }
-    }
-    return a;
-}
-
+import { readdirSync, promises } from "fs";
+var pc = 'C:/Users/M/AppData/Local/Google/Chrome/User Data/Default/Cache/Cache_Data/'
+var pa = 'C:/Users/M/Pictures/A/'
+var tp = { 'i': 'image', 'v': 'video', 'a': 'audio' }
+var tpe = process.argv[2] ? process.argv[2] : 'i';
+var sze = process.argv[3] ? process.argv[3] * 1024 * 1024 : 20 * 1024;
+var n = readdirSync(pc);
+var count = 0;
+(async () => {
+    var a = await Promise.all(n?.map((ns) => { return promises.stat(pc + ns).then((statrtrn) => { if (statrtrn?.size > sze) { return [ns, statrtrn] } }).catch((err) => { console.log('error'); }) }))
+    var b = await Promise.all(a?.map((as) => { if (as) { return fileTypeFromFile(pc + as[0]).then((ftretrn) => { if (ftretrn?.mime.split('/')[0] == tp[tpe]) { return [as[0], as[1], ftretrn] } }).catch((err) => { console.log('error'); }) } }))
+    console.log(b);
+    await Promise.all(b?.map((bs) => { if (bs) return promises.rename(pc + bs[0], pa + String(Math.floor(Math.random() * 1e8)) + '.' + bs[2].ext).then(() => { count++; console.log('\n' + bs[2].ext + ' == ' + (bs[1].size / (1024 * 1024)).toPrecision(4) + ' MB'); }).catch((err) => { console.log('error'); }) }))
+    console.log('\n==> ' + count + ' ' + tp[tpe] + 's');
+})();
