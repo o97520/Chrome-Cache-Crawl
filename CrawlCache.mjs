@@ -10,7 +10,6 @@ var count = 0;
 (async () => {
     var a = await Promise.all(n?.map((ns) => { return promises.stat(pc + ns).then((statrtrn) => { if (statrtrn?.size > sze) { return [ns, statrtrn] } }).catch((err) => { console.log('error'); }) }))
     var b = await Promise.all(a?.map((as) => { if (as) { return fileTypeFromFile(pc + as[0]).then((ftretrn) => { if (ftretrn?.mime.split('/')[0] == tp[tpe]) { return [as[0], as[1], ftretrn] } }).catch((err) => { console.log('error'); }) } }))
-    console.log(b);
     await Promise.all(b?.map((bs) => { if (bs) return promises.rename(pc + bs[0], pa + String(Math.floor(Math.random() * 1e8)) + '.' + bs[2].ext).then(() => { count++; console.log('\n' + bs[2].ext + ' == ' + (bs[1].size / (1024 * 1024)).toPrecision(4) + ' MB'); }).catch((err) => { console.log('error'); }) }))
     console.log('\n==> ' + count + ' ' + tp[tpe] + 's');
 })();
